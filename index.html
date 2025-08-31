@@ -315,18 +315,6 @@
 <body>
   <header>NEON VISION</header>
 
-  <div class="controls">
-    <label for="yearFilter" style="font-weight:700; color: var(--primary); user-select:none; margin-right: 8px;">Filter Tahun:</label>
-    <select id="yearFilter" aria-label="Filter movie year">
-      <option value="all" selected>Semua Tahun</option>
-      <option value="2024">2024</option>
-      <option value="2023">2023</option>
-      <option value="2022">2022</option>
-      <option value="2021">2021</option>
-      <option value="2020">2020</option>
-    </select>
-  </div>
-
   <div class="slider-wrapper" aria-label="Movie slider">
     <button class="nav-btn nav-left" aria-label="Previous" tabindex="0">&#10094;</button>
     <div class="slider" tabindex="0" aria-live="polite" aria-atomic="true">
@@ -343,40 +331,15 @@
     </div>
   </div>
 
-  <script>
-    // Movie data
-    const movies = [
-      {
-        title: "Cyber Horizon",
-        image: "https://images.unsplash.com/photo-1511765224389-37f0e77cf0eb?auto=format&fit=crop&w=400&q=80",
-        video: "https://www.youtube.com/embed/ysz5S6PUM-U",
-        year: 2024
-      },
-      {
-        title: "Neon Pulse",
-        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-        video: "https://www.youtube.com/embed/JfVOs4VSpmA",
-        year: 2023
-      },
-      {
-        title: "Quantum Rift",
-        image: "https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=400&q=80",
-        video: "https://www.youtube.com/embed/tgbNymZ7vqY",
-        year: 2022
-      },
-      {
-        title: "Synthwave Saga",
-        image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80",
-        video: "https://www.youtube.com/embed/kJQP7kiw5Fk",
-        year: 2021
-      },
-      {
-        title: "Future Noir",
-        image: "https://images.unsplash.com/photo-1485841890310-6a055c88698a?auto=format&fit=crop&w=400&q=80",
-        video: "https://www.youtube.com/embed/oRdxUFDoQe0",
-        year: 2020
-      }
-    ];
+  <div class="gallery-container">
+      <figure itemscope itemtype="http://schema.org/VideoObject">
+        <img src="https://dragonxcdnvideyy401co.github.io/ixAGHfAE1.mp4/27.jpg" alt="One of my favorite clips" itemprop="thumbnailUrl" loading="lazy" width="280" height="180" />
+        <figcaption itemprop="name">One of my favorite clips</figcaption>
+        <meta itemprop="description" content="A heartwarming clip of a baby's joyful smile, perfect for sharing." />
+        <meta itemprop="uploadDate" content="2025-08-27" /> <link itemprop="contentUrl" href="https://ashvili99-byte.github.io/HYiZdvaF1.mp4/" />
+        <a href="https://ashvili99-byte.github.io/HYiZdvaF1.mp4/" class="video-link" aria-label="Watch video: One of my favorite clips">Watch Video</a>
+      </figure>
+     </div> 
 
     const slider = document.querySelector('.slider');
     const modal = document.querySelector('.modal');
