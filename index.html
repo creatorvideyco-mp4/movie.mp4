@@ -1,0 +1,489 @@
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Movie Video </title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&display=swap');
+
+    :root {
+      --bg: #0c0c1a;
+      --primary: #9f5fff;
+      --secondary: #00fff7;
+      --text: #d0d0e8;
+      --shadow: rgba(159, 95, 255, 0.7);
+      --shadow-strong: rgba(159, 95, 255, 0.9);
+      --btn-bg: #2a1b53;
+      --btn-hover: #5e3fff;
+      --modal-bg: rgba(12,12,26,0.95);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    header {
+      font-family: 'Orbitron', monospace;
+      font-size: 3.8rem;
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--primary);
+      letter-spacing: 0.15em;
+      user-select: none;
+      text-shadow: 0 0 10px var(--primary);
+    }
+
+    .controls {
+      max-width: 1200px;
+      margin: 0 auto 1.5rem;
+      padding: 0 1rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    select {
+      background: var(--btn-bg);
+      border: none;
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px transparent;
+      transition: box-shadow 0.3s ease;
+    }
+    select:hover, select:focus {
+      outline: none;
+      box-shadow: 0 0 18px var(--primary);
+      color: var(--primary);
+    }
+
+    /* Slider container */
+    .slider-wrapper {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto 4rem;
+      padding: 0 1rem;
+      overflow: hidden;
+    }
+
+    .slider {
+      display: flex;
+      gap: 1.25rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) transparent;
+    }
+    .slider::-webkit-scrollbar {
+      height: 8px;
+    }
+    .slider::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .slider::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .card {
+      position: relative;
+      flex: 0 0 260px;
+      border-radius: 15px;
+      background: #1e1e3f;
+      box-shadow: 0 0 15px transparent;
+      transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        filter 0.35s ease;
+      cursor: pointer;
+      user-select: none;
+      outline-offset: 3px;
+      outline-color: var(--primary);
+      outline-style: solid;
+      outline-width: 0;
+    }
+    .card:focus-visible {
+      outline-width: 3px;
+    }
+
+    .card:hover, .card:focus-visible {
+      filter: brightness(1.15);
+      transform: scale(1.05);
+      box-shadow:
+        0 0 12px var(--primary),
+        0 0 20px var(--secondary),
+        0 0 40px var(--primary),
+        0 0 60px var(--secondary);
+      z-index: 5;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 15px 15px 0 0;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.7));
+      transition: transform 0.35s ease;
+    }
+
+    .card:hover img, .card:focus-visible img {
+      transform: scale(1.07);
+    }
+
+    .card-title {
+      padding: 1rem;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--primary);
+      text-align: center;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 10px var(--primary);
+      user-select: none;
+    }
+
+    /* Play button */
+    .play-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 70px;
+      height: 70px;
+      background: var(--secondary);
+      border-radius: 50%;
+      box-shadow:
+        0 0 15px var(--secondary),
+        0 0 30px var(--secondary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      animation: pulse 2.2s infinite;
+      z-index: 10;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 15px var(--secondary), 0 0 30px var(--secondary);}
+      50% { box-shadow: 0 0 25px var(--secondary), 0 0 50px var(--secondary);}
+    }
+    .card:hover .play-btn,
+    .card:focus-visible .play-btn {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .play-btn svg {
+      fill: var(--bg);
+      width: 36px;
+      height: 36px;
+      filter: drop-shadow(0 0 2px var(--bg));
+    }
+
+    /* Arrow nav */
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(47, 23, 97, 0.6);
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      color: var(--secondary);
+      font-size: 28px;
+      font-weight: 900;
+      box-shadow: 0 0 18px var(--secondary);
+      transition: background 0.3s ease;
+      user-select: none;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-btn:hover, .nav-btn:focus {
+      background: var(--secondary);
+      color: var(--bg);
+      outline: none;
+      box-shadow: 0 0 28px var(--secondary);
+    }
+    .nav-left {
+      left: 5px;
+    }
+    .nav-right {
+      right: 5px;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: var(--modal-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-content {
+      position: relative;
+      width: 90vw;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 0 40px var(--secondary);
+    }
+    .modal iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--secondary);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 0 15px var(--secondary);
+      transition: background 0.3s ease;
+      user-select: none;
+      z-index: 10;
+    }
+    .modal-close:hover, .modal-close:focus {
+      background: #fff;
+      color: var(--secondary);
+      outline: none;
+      box-shadow: 0 0 28px var(--secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .card {
+        flex: 0 0 70vw;
+      }
+      .card img {
+        height: 260px;
+      }
+      header {
+        font-size: 2.6rem;
+      }
+      .nav-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>VIDEY+</header>
+
+  <div class="slider-wrapper" aria-label="Movie slider">
+    <button class="nav-btn nav-left" aria-label="Previous" tabindex="0">&#10094;</button>
+    <div class="slider" tabindex="0" aria-live="polite" aria-atomic="true">
+      <!-- Movie cards inserted by JS -->
+    </div>
+    <button class="nav-btn nav-right" aria-label="Next" tabindex="0">&#10095;</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close video">&times;</button>
+      <iframe src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Movie data
+    const movies = [
+      {
+        title: "Cyber Horizon",
+        image: "https://dragonxcdnvideyy401co.github.io/cea6Wv5B1.mp4/12.jpg?auto=format&fit=crop&w=400&q=80",
+        video: "https://gocixcdnvdey.github.io/cea6Wv5B1.mp4"
+      },
+      {
+        title: "Neon Pulse",
+        image: "https://dragonxcdnvideyy401co.github.io/ixAGHfAE1.mp4/27.jpg?auto=format&fit=crop&w=400&q=80",
+        video: "https://gocixcdnvdey.github.io/ixAGHfAE1.mp4",
+        
+      },
+      {
+        title: "Quantum Rift",
+        image: "https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=400&q=80",
+        video: "https://www.youtube.com/embed/tgbNymZ7vqY",
+        
+      },
+      {
+        title: "Synthwave Saga",
+        image: "https://dragonxcdnvideyy401co.github.io/IMgryqbc1.mp4/19.jpg?auto=format&fit=crop&w=400&q=80",
+        video: "https://gocixcdnvdey.github.io/IMgryqbc1.mp4",
+        
+      },
+      {
+        title: "Future Noir",
+        image: "https://dragonxcdnvideyy401co.github.io/vA9cXVBc1.mp4/33.jpg?auto=format&fit=crop&w=400&q=80",
+        video: "https://gocixcdnvdey.github.io/vA9cXVBc1.mp4",
+        
+      }
+    ];
+
+    const slider = document.querySelector('.slider');
+    const modal = document.querySelector('.modal');
+    const modalIframe = modal.querySelector('iframe');
+    const modalCloseBtn = modal.querySelector('.modal-close');
+    const yearFilter = document.getElementById('yearFilter');
+
+    function createCard(movie) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Watch trailer of ${movie.title}, released in ${movie.year}`);
+
+      card.innerHTML = `
+        <img src="${movie.image}" alt="Poster of ${movie.title}" />
+        <div class="play-btn" role="button" aria-label="Play ${movie.title} trailer" tabindex="-1">
+          <svg viewBox="0 0 24 24" >
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </div>
+        <div class="card-title">${movie.title}</div>
+      `;
+
+      card.addEventListener('click', () => openModal(movie.video));
+      card.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal(movie.video);
+        }
+      });
+
+      return card;
+    }
+
+    function renderSlider(filteredMovies) {
+      slider.innerHTML = '';
+      filteredMovies.forEach(movie => {
+        const card = createCard(movie);
+        slider.appendChild(card);
+      });
+    }
+
+    function openModal(videoUrl) {
+      modal.classList.add('active');
+      modalIframe.src = videoUrl + "?autoplay=1&rel=0";
+      modal.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modalIframe.src = "";
+    }
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Slider nav buttons
+    const navLeft = document.querySelector('.nav-left');
+    const navRight = document.querySelector('.nav-right');
+
+    navLeft.addEventListener('click', () => {
+      slider.scrollBy({ left: -300, behavior: 'smooth' });
+    });
+    navRight.addEventListener('click', () => {
+      slider.scrollBy({ left: 300, behavior: 'smooth' });
+    });
+
+    // Filter change
+    yearFilter.addEventListener('change', () => {
+      const val = yearFilter.value;
+      if(val === 'all') {
+        renderSlider(movies);
+      } else {
+        renderSlider(movies.filter(m => m.year == val));
+      }
+    });
+
+    // Autoplay slider scroll every 4 seconds
+    let autoplayInterval = setInterval(() => {
+      if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) {
+        slider.scrollTo({left: 0, behavior: 'smooth'});
+      } else {
+        slider.scrollBy({left: 300, behavior: 'smooth'});
+      }
+    }, 4000);
+
+    // Pause autoplay on hover or focus
+    slider.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
+    slider.addEventListener('focusin', () => clearInterval(autoplayInterval));
+    slider.addEventListener('mouseleave', () => {
+      autoplayInterval = setInterval(() => {
+        if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) {
+          slider.scrollTo({left: 0, behavior: 'smooth'});
+        } else {
+          slider.scrollBy({left: 300, behavior: 'smooth'});
+        }
+      }, 4000);
+    });
+    slider.addEventListener('focusout', () => {
+      autoplayInterval = setInterval(() => {
+        if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) {
+          slider.scrollTo({left: 0, behavior: 'smooth'});
+        } else {
+          slider.scrollBy({left: 300, behavior: 'smooth'});
+        }
+      }, 4000);
+    });
+
+    // Initial render
+    renderSlider(movies);
+  </script>
+</body>
+</html>
+```
+
+
