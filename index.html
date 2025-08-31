@@ -1,466 +1,500 @@
-
-
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neon Vision - Futuristic Movie Slider</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500&display=swap');
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Golden Cinema - Premium Slider</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
 
-    :root {
-      --bg: #0c0c1a;
-      --primary: #9f5fff;
-      --secondary: #00fff7;
-      --text: #d0d0e8;
-      --shadow: rgba(159, 95, 255, 0.7);
-      --shadow-strong: rgba(159, 95, 255, 0.9);
-      --btn-bg: #2a1b53;
-      --btn-hover: #5e3fff;
-      --modal-bg: rgba(12,12,26,0.95);
-    }
+  :root {
+    --bg-color: #1b1b1b;
+    --primary-color: #ff9505;
+    --text-color: #f0e6d2;
+    --shadow-color: rgba(255, 149, 5, 0.7);
+    --modal-bg: rgba(27, 27, 27, 0.95);
+    --dot-inactive: #444;
+    --dot-active: var(--primary-color);
+  }
 
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Rajdhani', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
+  * {
+    box-sizing: border-box;
+  }
 
-    header {
-      font-family: 'Orbitron', monospace;
-      font-size: 3.8rem;
-      text-align: center;
-      padding: 1.5rem;
-      color: var(--primary);
-      letter-spacing: 0.15em;
-      user-select: none;
-      text-shadow: 0 0 10px var(--primary);
-    }
+  body {
+    margin: 0;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+  }
 
-    .controls {
-      max-width: 1200px;
-      margin: 0 auto 1.5rem;
-      padding: 0 1rem;
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      align-items: center;
-    }
+  header {
+    font-family: 'Roboto Slab', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    letter-spacing: 0.1em;
+    user-select: none;
+  }
 
-    select {
-      background: var(--btn-bg);
-      border: none;
-      border-radius: 6px;
-      padding: 0.4rem 0.8rem;
-      color: var(--text);
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 0 10px transparent;
-      transition: box-shadow 0.3s ease;
-    }
-    select:hover, select:focus {
-      outline: none;
-      box-shadow: 0 0 18px var(--primary);
-      color: var(--primary);
-    }
+  .slider-container {
+    max-width: 1200px;
+    margin: 0 auto 3rem auto;
+    padding: 0 1.5rem;
+  }
 
-    /* Slider container */
-    .slider-wrapper {
-      position: relative;
-      max-width: 1200px;
-      margin: 0 auto 4rem;
-      padding: 0 1rem;
-      overflow: hidden;
-    }
+  .grid-slider {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    perspective: 1000px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .grid-slider.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-    .slider {
-      display: flex;
-      gap: 1.25rem;
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      padding-bottom: 10px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--primary) transparent;
-    }
-    .slider::-webkit-scrollbar {
-      height: 8px;
-    }
-    .slider::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .slider::-webkit-scrollbar-thumb {
-      background: var(--primary);
-      border-radius: 4px;
-    }
+  .card {
+    background: #292929;
+    border-radius: 14px;
+    box-shadow: 0 0 15px transparent;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+  }
 
-    .card {
-      position: relative;
-      flex: 0 0 260px;
-      border-radius: 15px;
-      background: #1e1e3f;
-      box-shadow: 0 0 15px transparent;
-      transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease,
-        filter 0.35s ease;
-      cursor: pointer;
-      user-select: none;
-      outline-offset: 3px;
-      outline-color: var(--primary);
-      outline-style: solid;
-      outline-width: 0;
-    }
-    .card:focus-visible {
-      outline-width: 3px;
-    }
+  .card img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    display: block;
+    border-radius: 14px 14px 0 0;
+    transition: transform 0.3s ease;
+  }
 
-    .card:hover, .card:focus-visible {
-      filter: brightness(1.15);
-      transform: scale(1.05);
-      box-shadow:
-        0 0 12px var(--primary),
-        0 0 20px var(--secondary),
-        0 0 40px var(--primary),
-        0 0 60px var(--secondary);
-      z-index: 5;
-    }
+  .card:hover img {
+    transform: scale(1.05);
+  }
 
+  .card-title {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: var(--primary-color);
+    text-align: center;
+    background: #222;
+    border-radius: 0 0 14px 14px;
+    user-select: none;
+  }
+
+  .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 18px var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 10;
+  }
+  .card:hover .play-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .play-btn svg {
+    fill: #1b1b1b;
+    width: 30px;
+    height: 30px;
+  }
+
+  /* 3D tilt effect */
+  .card.tilt {
+    will-change: transform;
+  }
+
+  /* Navigation dots */
+  .dots-container {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  .dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin: 0 6px;
+    background: var(--dot-inactive);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .dot.active {
+    background: var(--dot-active);
+  }
+
+  /* Load more button */
+  .load-more-container {
+    text-align: center;
+    margin: 2rem 0 4rem;
+  }
+  .load-more-btn {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 30px;
+    padding: 0.75rem 2rem;
+    color: #1b1b1b;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--primary-color);
+    transition: background 0.3s ease;
+  }
+  .load-more-btn:hover {
+    background: #ffa733;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    top: 0; left: 0; right:0; bottom: 0;
+    background: var(--modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 1000;
+  }
+  .modal.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal-content {
+    position: relative;
+    width: 90vw;
+    max-width: 900px;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 10px;
+    box-shadow: 0 0 40px var(--primary-color);
+    overflow: hidden;
+  }
+  .modal iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: #1b1b1b;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--primary-color);
+    transition: background 0.3s ease;
+  }
+  .modal-close:hover {
+    background: #ffa733;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
     .card img {
-      width: 100%;
-      border-radius: 15px 15px 0 0;
-      height: 380px;
-      object-fit: cover;
-      display: block;
-      filter: drop-shadow(0 5px 5px rgba(0,0,0,0.7));
-      transition: transform 0.35s ease;
+      height: 280px;
     }
-
-    .card:hover img, .card:focus-visible img {
-      transform: scale(1.07);
-    }
-
-    .card-title {
+  }
+  @media (max-width: 600px) {
+    header {
+      font-size: 2.5rem;
       padding: 1rem;
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: var(--primary);
-      text-align: center;
-      letter-spacing: 0.05em;
-      text-shadow: 0 0 10px var(--primary);
-      user-select: none;
     }
-
-    /* Play button */
+    .card img {
+      height: 200px;
+    }
     .play-btn {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 70px;
-      height: 70px;
-      background: var(--secondary);
-      border-radius: 50%;
-      box-shadow:
-        0 0 15px var(--secondary),
-        0 0 30px var(--secondary);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform: translate(-50%, -50%) scale(0.8);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      animation: pulse 2.2s infinite;
-      z-index: 10;
-    }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 15px var(--secondary), 0 0 30px var(--secondary);}
-      50% { box-shadow: 0 0 25px var(--secondary), 0 0 50px var(--secondary);}
-    }
-    .card:hover .play-btn,
-    .card:focus-visible .play-btn {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translate(-50%, -50%) scale(1);
+      width: 45px;
+      height: 45px;
     }
     .play-btn svg {
-      fill: var(--bg);
-      width: 36px;
-      height: 36px;
-      filter: drop-shadow(0 0 2px var(--bg));
+      width: 22px;
+      height: 22px;
     }
-
-    /* Arrow nav */
-    .nav-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(47, 23, 97, 0.6);
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      cursor: pointer;
-      color: var(--secondary);
-      font-size: 28px;
-      font-weight: 900;
-      box-shadow: 0 0 18px var(--secondary);
-      transition: background 0.3s ease;
-      user-select: none;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .nav-btn:hover, .nav-btn:focus {
-      background: var(--secondary);
-      color: var(--bg);
-      outline: none;
-      box-shadow: 0 0 28px var(--secondary);
-    }
-    .nav-left {
-      left: 5px;
-    }
-    .nav-right {
-      right: 5px;
-    }
-
-    /* Modal */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: var(--modal-bg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-    }
-    .modal.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .modal-content {
-      position: relative;
-      width: 90vw;
-      max-width: 900px;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 0 40px var(--secondary);
-    }
-    .modal iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: var(--secondary);
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--bg);
-      font-weight: 700;
-      font-size: 24px;
-      box-shadow: 0 0 15px var(--secondary);
-      transition: background 0.3s ease;
-      user-select: none;
-      z-index: 10;
-    }
-    .modal-close:hover, .modal-close:focus {
-      background: #fff;
-      color: var(--secondary);
-      outline: none;
-      box-shadow: 0 0 28px var(--secondary);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .card {
-        flex: 0 0 70vw;
-      }
-      .card img {
-        height: 260px;
-      }
-      header {
-        font-size: 2.6rem;
-      }
-      .nav-btn {
-        width: 38px;
-        height: 38px;
-        font-size: 22px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <header>NEON VISION</header>
 
-  <div class="slider-wrapper" aria-label="Movie slider">
-    <button class="nav-btn nav-left" aria-label="Previous" tabindex="0">&#10094;</button>
-    <div class="slider" tabindex="0" aria-live="polite" aria-atomic="true">
-      <!-- Movie cards inserted by JS -->
-    </div>
-    <button class="nav-btn nav-right" aria-label="Next" tabindex="0">&#10095;</button>
+<header>GOLDEN CINEMA</header>
+
+<section class="slider-container" aria-label="Featured Movies">
+
+  <div class="grid-slider" tabindex="0" aria-live="polite" aria-atomic="true">
+    <!-- Cards injected here -->
   </div>
 
-  <!-- Modal -->
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-    <div class="modal-content">
-      <button class="modal-close" aria-label="Close video">&times;</button>
-      <iframe src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
+  <div class="dots-container" role="tablist" aria-label="Slider Navigation">
+    <!-- dots injected here -->
   </div>
 
-  <div class="gallery-container">
-      <figure itemscope itemtype="http://schema.org/VideoObject">
-        <img src="https://dragonxcdnvideyy401co.github.io/ixAGHfAE1.mp4/27.jpg" alt="One of my favorite clips" itemprop="thumbnailUrl" loading="lazy" width="280" height="180" />
-        <figcaption itemprop="name">One of my favorite clips</figcaption>
-        <meta itemprop="description" content="A heartwarming clip of a baby's joyful smile, perfect for sharing." />
-        <meta itemprop="uploadDate" content="2025-08-27" /> <link itemprop="contentUrl" href="https://ashvili99-byte.github.io/HYiZdvaF1.mp4/" />
-        <a href="https://ashvili99-byte.github.io/HYiZdvaF1.mp4/" class="video-link" aria-label="Watch video: One of my favorite clips">Watch Video</a>
-      </figure>
-     </div> 
+  <div class="load-more-container">
+    <button class="load-more-btn" aria-label="Load more movies">Load More</button>
+  </div>
+</section>
 
-    const slider = document.querySelector('.slider');
-    const modal = document.querySelector('.modal');
-    const modalIframe = modal.querySelector('iframe');
-    const modalCloseBtn = modal.querySelector('.modal-close');
-    const yearFilter = document.getElementById('yearFilter');
+<!-- Modal -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Close Video">&times;</button>
+    <iframe id="modal-iframe" src="" allow="autoplay; fullscreen" allowfullscreen title="Movie Trailer"></iframe>
+  </div>
+</div>
 
-    function createCard(movie) {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.setAttribute('tabindex', '0');
-      card.setAttribute('aria-label', `Watch trailer of ${movie.title}, released in ${movie.year}`);
+<script>
+  const movies = [
+    { title: "Solar Blaze", img: "https://dragonxcdnvideyy401co.github.io/ixAGHfAE1.mp4/27.jpg?auto=format&fit=crop&w=600&q=80", video: "https://gocixcdnvdey.github.io/ixAGHfAE1.mp4" },
+    { title: "Crimson Dawn", img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/9xwazD5SyVg" },
+    { title: "Echoes of Eternity", img: "https://images.unsplash.com/photo-1524492449090-5a952e9c2b0a?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/2g811Eo7K8U" },
+    { title: "Neon Skyline", img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/JfVOs4VSpmA" },
+    { title: "Golden Hour", img: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/1roy4o4tqQM" },
+    { title: "Celestial Voyage", img: "https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/8ugaeA-nMTc" },
+    { title: "Mystic Horizon", img: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/qjxdjS3GWWY" },
+    { title: "Shadow Realm", img: "https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/9No-FiEInLA" },
+    { title: "Eternal Night", img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/VYOjWnS4cMY" },
+    { title: "Cosmic Dance", img: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/ZXsQAXx_ao0" },
+    { title: "Starlight Chase", img: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/1roy4o4tqQM" },
+    { title: "Aurora Dreams", img: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/GlrxcuEDyF8" },
+    { title: "Quantum Leap", img: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/8ugaeA-nMTc" },
+    { title: "Lunar Shadows", img: "https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/JfVOs4VSpmA" },
+    { title: "Nova Rising", img: "https://images.unsplash.com/photo-1524492449090-5a952e9c2b0a?auto=format&fit=crop&w=600&q=80", video: "https://www.youtube.com/embed/2g811Eo7K8U" },
+  ];
 
-      card.innerHTML = `
-        <img src="${movie.image}" alt="Poster of ${movie.title}" />
-        <div class="play-btn" role="button" aria-label="Play ${movie.title} trailer" tabindex="-1">
-          <svg viewBox="0 0 24 24" >
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        </div>
-        <div class="card-title">${movie.title}</div>
-      `;
+  const slider = document.querySelector('.grid-slider');
+  const dotsContainer = document.querySelector('.dots-container');
+  const loadMoreBtn = document.querySelector('.load-more-btn');
+  const modal = document.getElementById('modal');
+  const modalIframe = document.getElementById('modal-iframe');
+  const modalCloseBtn = modal.querySelector('.modal-close');
 
-      card.addEventListener('click', () => openModal(movie.video));
-      card.addEventListener('keypress', (e) => {
+  const pageSize = 6; // how many movies per "page"
+  let currentPage = 1;
+
+  // Helpers: create card element
+  function createCard(movie, index) {
+    const card = document.createElement('div');
+    card.className = 'card tilt';
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Play ${movie.title} trailer`);
+    card.dataset.video = movie.video;
+
+    // Image
+    const img = document.createElement('img');
+    img.src = movie.img;
+    img.alt = movie.title + " poster";
+    img.loading = 'lazy';
+    card.appendChild(img);
+
+    // Play button
+    const playBtn = document.createElement('div');
+    playBtn.className = 'play-btn';
+    playBtn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
+    card.appendChild(playBtn);
+
+    // Title
+    const title = document.createElement('div');
+    title.className = 'card-title';
+    title.textContent = movie.title;
+    card.appendChild(title);
+
+    // Click open modal
+    card.addEventListener('click', () => openModal(movie.video));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(movie.video);
+      }
+    });
+
+    // 3D Tilt effect on mousemove
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      const tiltX = (y / rect.height) * 15;
+      const tiltY = -(x / rect.width) * 15;
+      card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.03)`;
+      card.style.boxShadow = `0 15px 25px var(--shadow-color)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.style.boxShadow = '';
+    });
+
+    return card;
+  }
+
+  // Render a page of movies
+  function renderPage(page) {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const subset = movies.slice(start, end);
+
+    subset.forEach((movie, i) => {
+      slider.appendChild(createCard(movie, start + i));
+    });
+
+    // Fade-in visible
+    setTimeout(() => slider.classList.add('visible'), 100);
+
+    updateDots();
+  }
+
+  // Update dots navigation
+  function updateDots() {
+    dotsContainer.innerHTML = '';
+    const totalPages = Math.ceil(movies.length / pageSize);
+    for (let i = 1; i <= totalPages; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'dot' + (i === currentPage ? ' active' : '');
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-selected', i === currentPage ? 'true' : 'false');
+      dot.setAttribute('tabindex', '0');
+      dot.addEventListener('click', () => goToPage(i));
+      dot.addEventListener('keydown', e => {
         if(e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          openModal(movie.video);
+          goToPage(i);
         }
       });
-
-      return card;
+      dotsContainer.appendChild(dot);
     }
+  }
 
-    function renderSlider(filteredMovies) {
+  // Go to page i
+  function goToPage(i) {
+    if (i === currentPage) return;
+    currentPage = i;
+    slider.innerHTML = '';
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    movies.slice(start, end).forEach((movie) => {
+      slider.appendChild(createCard(movie));
+    });
+    updateDots();
+  }
+
+  // Load more button - load next page if any
+  loadMoreBtn.addEventListener('click', () => {
+    if ((currentPage * pageSize) >= movies.length) {
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = 'No More Movies';
+      return;
+    }
+    currentPage++;
+    renderPage(currentPage);
+    if ((currentPage * pageSize) >= movies.length) {
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = 'No More Movies';
+    }
+  });
+
+  // Modal open
+  function openModal(videoUrl) {
+    modal.classList.add('active');
+    modalIframe.src = videoUrl + "?autoplay=1&controls=1";
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Modal close
+  modalCloseBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  function closeModal() {
+    modal.classList.remove('active');
+    modalIframe.src = '';
+    document.body.style.overflow = '';
+  }
+
+  // Autoplay slider (auto-load next page every 6 seconds)
+  let autoPlayInterval = setInterval(() => {
+    if ((currentPage * pageSize) >= movies.length) {
+      currentPage = 1;
       slider.innerHTML = '';
-      filteredMovies.forEach(movie => {
-        const card = createCard(movie);
-        slider.appendChild(card);
-      });
+      renderPage(currentPage);
+      loadMoreBtn.disabled = false;
+      loadMoreBtn.textContent = 'Load More';
+      return;
     }
+    currentPage++;
+    slider.innerHTML = '';
+    renderPage(currentPage);
+  }, 6000);
 
-    function openModal(videoUrl) {
-      modal.classList.add('active');
-      modalIframe.src = videoUrl + "?autoplay=1&rel=0";
-      modal.focus();
-    }
-
-    function closeModal() {
-      modal.classList.remove('active');
-      modalIframe.src = "";
-    }
-
-    modalCloseBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-      if(e.target === modal) closeModal();
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape' && modal.classList.contains('active')) {
-        closeModal();
+  // Pause autoplay on hover slider or modal open
+  slider.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+  slider.addEventListener('mouseleave', () => {
+    autoPlayInterval = setInterval(() => {
+      if ((currentPage * pageSize) >= movies.length) {
+        currentPage = 1;
+        slider.innerHTML = '';
+        renderPage(currentPage);
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.textContent = 'Load More';
+        return;
       }
-    });
-
-    // Slider nav buttons
-    const navLeft = document.querySelector('.nav-left');
-    const navRight = document.querySelector('.nav-right');
-
-    navLeft.addEventListener('click', () => {
-      slider.scrollBy({ left: -300, behavior: 'smooth' });
-    });
-    navRight.addEventListener('click', () => {
-      slider.scrollBy({ left: 300, behavior: 'smooth' });
-    });
-
-    // Filter change
-    yearFilter.addEventListener('change', () => {
-      const val = yearFilter.value;
-      if(val === 'all') {
-        renderSlider(movies);
-      } else {
-        renderSlider(movies.filter(m => m.year == val));
+      currentPage++;
+      slider.innerHTML = '';
+      renderPage(currentPage);
+    }, 6000);
+  });
+  modal.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+  modal.addEventListener('mouseleave', () => {
+    autoPlayInterval = setInterval(() => {
+      if ((currentPage * pageSize) >= movies.length) {
+        currentPage = 1;
+        slider.innerHTML = '';
+        renderPage(currentPage);
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.textContent = 'Load More';
+        return;
       }
-    });
+      currentPage++;
+      slider.innerHTML = '';
+      renderPage(currentPage);
+    }, 6000);
+  });
 
-    // Autoplay slider scroll every 4 seconds
-    let autoplayInterval = setInterval(() => {
-      if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) {
-        slider.scrollTo({left: 0, behavior: 'smooth'});
-      } else {
-        slider.scrollBy({left: 300, behavior: 'smooth'});
-      }
-    }, 4000);
+  // Initial render
+  renderPage(currentPage);
+</script>
 
-    // Pause autoplay on hover or focus
-    slider.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
-    slider.addEventListener('focusin', () => clearInterval(autoplayInterval));
-    slider.addEventListener('mouseleave', () => {
-      autoplayInterval = setInterval(() => {
-        if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) {
-          slider.scrollTo({left: 0, behavior: 'smooth'});
-        } else {
-          slider.scrollBy({left: 300, behavior: 'smooth'});
-        }
-      }, 4000);
-    });
-    slider.addEventListener('focusout', () => {
-      autoplayInterval = setInterval(() => {
-        if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth) {
-          slider.scrollTo({left: 0, behavior: 'smooth'});
-        } else {
-          slider.scrollBy({left: 300, behavior: 'smooth'});
-        }
-      }, 4000);
-    });
-
-    // Initial render
-    renderSlider(movies);
-  </script>
 </body>
 </html>
-```
-
-
